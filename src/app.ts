@@ -1,7 +1,7 @@
 import marked from "marked";
 import express from "express";
 
-import {scrapeChannelPreviewHTML} from "./src/telegram/telegramScraper";
+import {scrapeChannelPreviewHTML} from "./telegram/telegramScraper";
 
 require('gun/axe');
 require('gun/sea');
@@ -56,10 +56,9 @@ function initHTTPserver() {
   app.use(Gun.serve)
   app.use(express.json())
   
-  app.get('/', (_,res) => res.send('TypeScript Express + GunDB Server'));
+  app.get('/', (_,res) => res.send("Welcome to Myriad's Scraper API!"));
   
   app.get("/telegram", (req, res) => {
-    
     let channel = req.query.channel;
     scrapeChannelPreviewHTML(channel as string, res);
   })

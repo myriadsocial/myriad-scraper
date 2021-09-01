@@ -1,16 +1,18 @@
-import {gun} from "../../index";
+import {gun} from "../app";
 import { parse } from 'node-html-parser';
 import axios from "axios"
 
 export async function scrapeChannelPreviewHTML(channel: string, res: any) {
   const gunUser = gun.user();
   const node = await gunUser.get("telegram").get(channel);
-  console.log("NODE", node);
-  const lastMsgId = Object.keys(node).sort((a,b) => {return parseInt(a, 10)-parseInt(b, 10)})[0]
+  // console.log("NODE", node);
+  const lastMsgId = Object.keys(node).sort((a,b) => {return parseInt(b, 10)-parseInt(a, 10)})[0]
+  console.log(lastMsgId, Object.keys(node).sort((a,b) => {return parseInt(b, 10)-parseInt(a, 10)}))
   axios.get("https://t.me/s/"+channel+"?after="+lastMsgId)
     .then((response) => {
       res.send("NICE!");
       const responseStr = response.data.toString();
+      // console.log(responseStr)
       const html = parse(responseStr);
       const messagesText = html.querySelectorAll(".js-message_text");
       const messagesInfo = html.querySelectorAll(".js-message_info");

@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "ts-node ./src/app.ts",
     "build": "tsc --project tsconfig.json"
   }
 }
