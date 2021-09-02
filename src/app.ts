@@ -1,7 +1,7 @@
 import marked from "marked";
-import express from "express";
-
-import {scrapeChannelPreviewHTML} from "./telegram/telegramScraper";
+import express, { Application, Router } from "express";
+import swaggerUi from "swagger-ui-express";
+import { RegisterRoutes } from "../build/routes";
 
 require('gun/axe');
 require('gun/sea');
@@ -15,15 +15,19 @@ marked.setOptions({
   renderer: new TerminalRenderer()
 })
 
-const app = express();
+const app: Application = express();
+app.use(express.static("public"));
+
 console.log(marked('# Starting Gunpoint API !'))
 export const gun = Gun({ 
-  web: app.listen(port, () => { console.log(marked('**Gunpoint is running at http://localhost:' + port + '**')) }),
+  web: app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
   peers: ["http://host.docker.internal:8765/gun"]
 });
 
-initGun()
 //Init Gun
+initGun()
+initHTTPserver()
+
 async function initGun() {
   let gunUser = gun.user()
   let appGunPubKey = "TBD"
@@ -45,7 +49,6 @@ async function initGun() {
           return;
         }
         console.log("current user:", gunUser.is)
-        initHTTPserver()
         return cb.get;
       })
     })
@@ -55,11 +58,15 @@ async function initGun() {
 function initHTTPserver() {
   app.use(Gun.serve)
   app.use(express.json())
-  
-  app.get('/', (_,res) => res.send("Welcome to Myriad's Scraper API!"));
-  
-  app.get("/telegram", (req, res) => {
-    let channel = req.query.channel;
-    scrapeChannelPreviewHTML(channel as string, res);
-  })
+  app.use(
+    "/docs",
+    swaggerUi.serve,
+    swaggerUi.setup(undefined, {
+      swaggerOptions: {
+        url: "/swagger.json",
+      },
+    })
+  );
+
+  RegisterRoutes(app);
 }
