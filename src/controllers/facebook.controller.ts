@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Tags, Post, Body, Path } from "tsoa";
+import { Controller, Get, Route, Post, Body, Path } from "tsoa";
 import { FacebookService, ImportIndividualFacebookPostParams, FbInidivdualPostsNode } from "../services/facebook.service";
 
 @Route("facebook")
@@ -13,8 +13,8 @@ export class FacebookController extends Controller {
   public async getPostById(
     @Path() postId: string
   ): Promise<string> {
-    const fbNode = await new FacebookService().getFacebookPostById();
-    return fbNode[postId];
+    const fbNode = await new FacebookService().getFacebookPostById(postId);
+    return fbNode;
   }
   @Post("page")
   public async scrapeFacebookPageRoute(

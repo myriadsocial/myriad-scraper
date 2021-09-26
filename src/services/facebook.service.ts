@@ -36,7 +36,12 @@ export class FacebookService {
     });
   }
 
-  public async getFacebookPostById(): Promise<FbInidivdualPostsNode> {
-    return gun.user().get("facebook");
+  public async getFacebookPostById(postId: string): Promise<string> {
+    const fbNode = await this.getFacebookNode();
+    return fbNode[postId];
+  }
+
+  public async getFacebookNode(): Promise<FbInidivdualPostsNode> {
+    return await gun.user().get("facebook");
   }
 }
