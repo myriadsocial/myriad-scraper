@@ -16,4 +16,8 @@ RUN yarn build
 ENV HOST=0.0.0.0 PORT=5000 GUN_PORT=8763
 EXPOSE ${PORT} ${GUN_PORT}
 # RUN tsc
-CMD [ "node", "build/src.app.js" ]
+CMD [ "node", "build/src/app.js" ]
+
+
+#local container
+#docker run -d -it --name scraper -p 5000:5000 -p 8763:8763 -v C:/Users/dynam/source/repos/myriad-scraper:/app/ nikolaik/python-nodejs:python3.8-nodejs16
