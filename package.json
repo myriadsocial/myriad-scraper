@@ -23,9 +23,10 @@
     "typescript": "^4.4.2"
   },
   "keywords": [],
+  "main": "build/src/app.js",
   "scripts": {
     "start": "tsc --outDir build --experimentalDecorators && node ./build/src/app.js",
-    "build": "tsc --project tsconfig.json",
+    "build": "tsoa spec-and-routes && tsc --outDir build",
     "test": "jest",
     "dev": "yarn run tsoa routes && ts-node src/app.ts"
   },
