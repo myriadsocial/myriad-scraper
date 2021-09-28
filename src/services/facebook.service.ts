@@ -1,8 +1,6 @@
 import {gun} from "../app";
-
-export interface ImportIndividualFacebookPostParams {
-  postId: string;
-}
+import fs from 'fs';
+import csv from 'csv-parser';
 
 export interface FbInidivdualPostsNode {
   [key: string]: string;
@@ -13,6 +11,7 @@ interface FBPost {
   // images: string[];
   // video: string;
   // username: string;
+  post_id: string;
 }
 
 export class FacebookService {
@@ -43,5 +42,39 @@ export class FacebookService {
 
   public async getFacebookNode(): Promise<FbInidivdualPostsNode> {
     return await gun.user().get("facebook");
+  }
+
+  public async scrapeFacebookPage(page: string): Promise<void> {
+    const gunUser = gun.user();
+    const results: FBPost[] = [];
+    const {exec} = require("child_process")
+    await exec("facebook-scraper --pages 3 "+page, async (error: { message: any; }, stdout: string | string[], stderr: any) => {
+      fs.createReadStream("./"+page+"_posts.csv")
+      .pipe(csv())
+      .on('data', (data: FBPost) => results.push(data))
+      .on('end', () => {
+        results.forEach(post => {
+          console.log(post.post_id);
+          // post.text = post.text.replace(/'time'[^|]+, /g, '');
+          gunUser.get("facebook").put({[post.post_id]: post.text});
+        })
+        fs.unlink("./"+page+"_posts.csv", (err) => {
+          if (err) console.log(err);
+          console.log("file deleted successfully");
+        });  
+
+      });
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return false
+      }
+      else if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return false
+      }
+      else {
+        console.log(`stdout: ${stdout}`);
+      }
+  });
   }
 }
