@@ -5,6 +5,8 @@ import express, { Application, Router,  Response as ExResponse,
 import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "../build/routes";
 import { ValidateError } from 'tsoa';
+import * as dotenv from "dotenv";
+import cors from "cors";
 
 // require('gun/axe');
 require('gun/sea');
@@ -13,6 +15,7 @@ const TerminalRenderer = require('marked-terminal');
 const Gun = require('gun');
 // const SEA = Gun.SEA;
 
+dotenv.config();
 const port = process.env.PORT || 5000; 
 marked.setOptions({
   renderer: new TerminalRenderer()
@@ -24,8 +27,11 @@ app.use(express.static("public"));
 console.log(marked('# Starting Gunpoint API !'))
 export const gun = Gun({ 
   web: app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
-  peers: ["https://myriad-gundb-relay-peer.herokuapp.com/gun"],
-  axe: false
+  peers: [process.env.GUN_HOST],
+  axe: false,
+  multicast: {
+    port: process.env.GUN_PORT
+  },
 });
 
 //Init Gun
@@ -40,7 +46,7 @@ async function initGun() {
     appGunPubKey = gunUser.is.pub;
   } else {
     console.log('You are NOT logged in');
-    appGunPubKey = gun.user().create("myriad-scraper", "supahScr3tPwd", (cb: any) => {
+    appGunPubKey = gun.user().create(process.env.GUN_USER, process.env.GUN_PWD, (cb: any) => {
       console.log("create user cb", cb);
       if (cb.ok === 0) {
         return cb.pub
@@ -60,6 +66,7 @@ async function initGun() {
 }
 
 function initHTTPserver() {
+  app.use(cors()); 
   app.use(Gun.serve)
   app.use(express.json())
   app.use(

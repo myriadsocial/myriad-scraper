@@ -30,6 +30,11 @@
     "dev": "yarn run tsoa routes && ts-node src/app.ts"
   },
   "dependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/dotenv": "^8.2.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^10.0.0",
     "swagger-ui-express": "^4.1.6",
     "tsoa": "^3.9.0"
   }
