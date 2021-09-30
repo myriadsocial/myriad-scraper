@@ -8,9 +8,9 @@ export class TelegramService {
     const node = await gunUser.get("telegram").get(channel);
     // console.log("TELEGRAM NODE", node);
     //Get the highest message ID by sorting the keys by descending order
-    let telegramQueryParam = "";
+    let telegramQueryParam: string = "";
     if (node) {
-      const telegramQueryParam = "?after="+Object.keys(node).sort((a,b) => {return parseInt(b, 10)-parseInt(a, 10)})[0]
+      telegramQueryParam = "?after="+Object.keys(node).sort((a,b) => {return parseInt(b, 10)-parseInt(a, 10)})[0]
       // console.log(telegramQueryParam, Object.keys(node).sort((a,b) => {return parseInt(b, 10)-parseInt(a, 10)}))
     }
     

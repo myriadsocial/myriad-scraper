@@ -7,6 +7,7 @@
     "@types/jest": "^27.0.1",
     "@types/marked": "^3.0.0",
     "@types/node": "^16.7.2",
+    "@types/supertest": "^2.0.11",
     "@types/swagger-ui-express": "^4.1.3",
     "axios": "^0.21.1",
     "concurrently": "^6.2.1",
@@ -16,18 +17,25 @@
     "marked": "^2.0.0",
     "marked-terminal": "^4.1.1",
     "node-html-parser": "^4.1.3",
+    "supertest": "^6.1.6",
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
   },
   "keywords": [],
+  "main": "build/src/app.js",
   "scripts": {
     "start": "tsc --outDir build --experimentalDecorators && node ./build/src/app.js",
-    "build": "tsc --project tsconfig.json",
+    "build": "tsoa spec-and-routes && tsc --outDir build",
     "test": "jest",
     "dev": "yarn run tsoa routes && ts-node src/app.ts"
   },
   "dependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/dotenv": "^8.2.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^10.0.0",
     "swagger-ui-express": "^4.1.6",
     "tsoa": "^3.9.0"
   }
