@@ -3,17 +3,18 @@ import { FacebookService } from "../services/facebook.service";
 
 @Route("facebook")
 export class FacebookController extends Controller {
-  @Get("individual/{postId}")
+  @Get("individual/{page}/{postId}")
   public async getPostByIdRoute(
-    @Path() postId: string
+    @Path() postId: string, page: string
   ): Promise<string> {
-    const fbNode = await new FacebookService().getFacebookPostById(postId);
+    const fbNode = await new FacebookService().getFacebookPostById(page, postId);
     return fbNode;
   }
-  @Get("page")
+  @Get("page/{page}")
   public async getFacebookNodeRoute(
+    @Path() page: string
   ): Promise<object> {
-    const fbNode = await new FacebookService().getFacebookNode();
+    const fbNode = await new FacebookService().getFacebookPage(page);
     return fbNode;
   }
   @Post("individual")
