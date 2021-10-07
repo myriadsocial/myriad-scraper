@@ -26,7 +26,6 @@ app.use(express.static("public"));
 
 console.log(marked('# Starting Gunpoint API !'))
 export const gun = Gun({ 
-  web: app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
   peers: [process.env.GUN_HOST],
   axe: false,
   multicast: {
@@ -66,6 +65,7 @@ async function initGun() {
 }
 
 function initHTTPserver() {
+  app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
   app.use(cors()); 
   app.use(Gun.serve)
   app.use(express.json())
