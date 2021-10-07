@@ -30,18 +30,19 @@ export class FacebookService {
         
         //TODO: fix regex replace (removing too much data) thhen parse into FBPost interface 
         // let post: FBPost = JSON.parse(stdout);
+        //TODO: parse the page from the scraped data and put in appropiate page's node
         gun.user().get("facebook").put({[postId]: stdout});
       }
     });
   }
 
-  public async getFacebookPostById(postId: string): Promise<string> {
-    const fbNode = await this.getFacebookNode();
-    return fbNode[postId];
+  public async getFacebookPostById(page: string, postId: string): Promise<string> {
+    const fbPageNode = await this.getFacebookPage(page);
+    return fbPageNode[postId];
   }
 
-  public async getFacebookNode(): Promise<FbInidivdualPostsNode> {
-    return await gun.user().get("facebook");
+  public async getFacebookPage(page: string): Promise<FbInidivdualPostsNode> {
+    return await gun.user().get("facebook").get(page);
   }
 
   public async scrapeFacebookPage(page: string): Promise<void> {
@@ -56,7 +57,7 @@ export class FacebookService {
         results.forEach(post => {
           console.log(post.post_id);
           // post.text = post.text.replace(/'time'[^|]+, /g, '');
-          gunUser.get("facebook").put({[post.post_id]: post.text});
+          gunUser.get("facebook").get(page).put({[post.post_id]: post.text});
         })
         fs.unlink("./"+page+"_posts.csv", (err) => {
           if (err) console.log(err);
