@@ -3,31 +3,35 @@ import { FacebookService } from "../services/facebook.service";
 
 @Route("facebook")
 export class FacebookController extends Controller {
-  @Get("individual/{page}/{postId}")
+
+  @Get("individual/{username}/{postId}")
   public async getPostByIdRoute(
-    @Path() postId: string, page: string
+    @Path() postId: string, username: string
   ): Promise<string> {
-    const fbNode = await new FacebookService().getFacebookPostById(page, postId);
+    const fbNode = await new FacebookService().getFacebookPostById(username, postId);
     return fbNode;
   }
-  @Get("page/{page}")
-  public async getFacebookNodeRoute(
-    @Path() page: string
+  @Get("username/{username}")
+  public async getUsernameRoute(
+    @Path() username: string
   ): Promise<object> {
-    const fbNode = await new FacebookService().getFacebookPage(page);
+    const fbNode = await new FacebookService().getUsernamesPosts(username);
     return fbNode;
   }
   @Post("individual")
   public async importFacebookPostRoute(
-    @Body() body: { postId: string }
+    @Body() body: { 
+      urlId: string,
+      importerUsername: string,
+    }
   ): Promise<object> {
-    return await new FacebookService().importFacebookPost(body.postId)
+    return await new FacebookService().importFacebookPost(body.urlId, body.importerUsername)
   }
 
-  @Post("page")
-  public async scrapeFacebookPageRoute(
-    @Body() body: { page: string } , 
+  @Post("username")
+  public async scrapeFacebookUsernameRoute(
+    @Body() body: { username: string }, 
   ): Promise<void> {
-    new FacebookService().scrapeFacebookPage(body.page)
+    new FacebookService().scrapeFacebookUsername(body.username)
   }
 }

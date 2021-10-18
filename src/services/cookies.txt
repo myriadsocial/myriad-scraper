@@ -1,7 +1,7 @@
 [
 {
     "domain": ".facebook.com",
-    "expirationDate": 1663938580.729128,
+    "expirationDate": 1665143146.841695,
     "hostOnly": false,
     "httpOnly": false,
     "name": "c_user",
@@ -29,7 +29,7 @@
 },
 {
     "domain": ".facebook.com",
-    "expirationDate": 1632747614,
+    "expirationDate": 1634211947,
     "hostOnly": false,
     "httpOnly": false,
     "name": "dpr",
@@ -43,7 +43,7 @@
 },
 {
     "domain": ".facebook.com",
-    "expirationDate": 1640178577.729332,
+    "expirationDate": 1641383145.841779,
     "hostOnly": false,
     "httpOnly": true,
     "name": "fr",
@@ -52,22 +52,8 @@
     "secure": true,
     "session": false,
     "storeId": "0",
-    "value": "0sW3mnmGSDtyxoepZ.AWXBB2Mv1Rplg7XrFj_uATxXAPk.BhTHwN.VY.AAA.0.0.BhTHyU.AWWuBH3sr10",
+    "value": "0K0PumdOUAYz2GxVr.AWXMhT7E_Kq0jjH32FDIpOGN1HU.BhXt3q.VY.AAA.0.0.BhXt3q.AWXlWv7m8v8",
     "id": 4
-},
-{
-    "domain": ".facebook.com",
-    "expirationDate": 1632747620.307669,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "locale",
-    "path": "/",
-    "sameSite": "no_restriction",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "en_GB",
-    "id": 5
 },
 {
     "domain": ".facebook.com",
@@ -81,11 +67,11 @@
     "session": false,
     "storeId": "0",
     "value": "8V4sYS5sex-WnepddlL0WLVH",
-    "id": 6
+    "id": 5
 },
 {
     "domain": ".facebook.com",
-    "expirationDate": 1632492588.11907,
+    "expirationDate": 1633697147.081314,
     "hostOnly": false,
     "httpOnly": true,
     "name": "spin",
@@ -94,8 +80,8 @@
     "secure": true,
     "session": false,
     "storeId": "0",
-    "value": "r.1004442794_b.trunk_t.1632402587_s.1_v.2_",
-    "id": 7
+    "value": "r.1004515420_b.trunk_t.1633607145_s.1_v.2_",
+    "id": 6
 },
 {
     "domain": ".facebook.com",
@@ -108,25 +94,11 @@
     "session": true,
     "storeId": "0",
     "value": "eyJ2ZXIiOjEsImlkIjoiQXF6cnkzbTFiMGYzb3IiLCJ0aW1lIjoxNjMyMjExMDQyfQ%3D%3D",
-    "id": 8
+    "id": 7
 },
 {
     "domain": ".facebook.com",
-    "expirationDate": 1633007378,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "wd",
-    "path": "/",
-    "sameSite": "lax",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "1368x769",
-    "id": 9
-},
-{
-    "domain": ".facebook.com",
-    "expirationDate": 1663938580.729231,
+    "expirationDate": 1665143146.841751,
     "hostOnly": false,
     "httpOnly": true,
     "name": "xs",
@@ -135,7 +107,7 @@
     "secure": true,
     "session": false,
     "storeId": "0",
-    "value": "36%3A8uyu5CzVZGWDuQ%3A2%3A1632402581%3A-1%3A-1",
-    "id": 10
+    "value": "36%3A8uyu5CzVZGWDuQ%3A2%3A1632402581%3A-1%3A-1%3A%3AAcV63K-sbrEnbKzA4KntVYhr68FuswcQl5VtjO3xtA",
+    "id": 8
 }
 ]
