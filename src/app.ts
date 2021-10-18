@@ -45,11 +45,11 @@ async function initGun() {
     appGunPubKey = gunUser.is.pub;
   } else {
     console.log('You are NOT logged in');
-    appGunPubKey = gun.user().create(process.env.GUN_USER, process.env.GUN_PWD, (cb: any) => {
-      console.log("create user cb", cb);
-      if (cb.ok === 0) {
-        return cb.pub
-      }
+    // appGunPubKey = gun.user().create(process.env.GUN_USER, process.env.GUN_PWD, (cb: any) => {
+    //   console.log("create user cb", cb);
+    //   if (cb.ok === 0) {
+    //     return cb.pub
+    //   }
       //login if create failed
       gun.user().auth("myriad-scraper", "supahScr3tPwd", async (cb: any) => {
         gunUser = gun.user()
@@ -60,7 +60,7 @@ async function initGun() {
         console.log("current user:", gunUser.is)
         return cb.get;
       })
-    })
+    // })
   }
 }
 
