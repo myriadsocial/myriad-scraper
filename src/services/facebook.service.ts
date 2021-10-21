@@ -6,7 +6,7 @@ export interface FbInidivdualPostsNode {
   [key: string]: string;
 }
 
-interface FBPost {
+export interface FBPost {
   text: string;
   images: string[];
   video: string;
@@ -26,21 +26,16 @@ export class FacebookService {
     const {exec} = require("child_process")
     return exec("python src/services/facebookScraper.py "+urlId, async (error: { message: string; }, stdout: string, stderr: string) => {
       if (error) {
-        // console.log(`error: ${error.message}`);
+        console.log(`error: ${error.message}`);
       }
       if (stderr) {
-        // console.log(`stderr: ${stderr}`);
+        console.log(`stderr: ${stderr}`);
       }
       if (stdout) {
-        stdout = stdout.replace(/datetime.datetime/, '\'');
-        stdout = stdout.replace(/, 'timestamp'/, '\', \'timestamp\'');
-        stdout = stdout.replace(/'/g, '"');
-        stdout = stdout.replace(/None/g, 'null');
-        stdout = stdout.replace(/False/g, 'false');
-        stdout = stdout.replace(/True/g, 'true');
-        // console.log(`stdout: ${stdout}`);
+        console.log(`stdout: ${stdout}`);
+        const jsObjectString = this.pythonToJSobject(stdout);
         try {
-          let rawJson = JSON.parse(stdout);
+          let rawJson = JSON.parse(jsObjectString);
           let images = null;
           if (rawJson.images.length > 0) {
             images = rawJson.images;
@@ -62,19 +57,33 @@ export class FacebookService {
               shares: rawJson.shares
             }
           }
-          post.username = post.username.toLowerCase().replace(/ /g, '');
-          gun.user().get("facebook").get(post.username).get(urlId).put(JSON.stringify(post), (cb: object) => {
-            console.log("POST SUCCESSFULLY SAVED?", cb)
-            // gun.user().get("facebook").get(post.username).get(urlId).once((s:object) => {
-            //   console.log("saved post", s);
-            // })
-          });
-
+          console.log(post);
+          this.savePostToGun(urlId, post);
         } catch (e) {
           console.log("error", e);
         }
       }
     });
+  }
+
+  public savePostToGun(urlId: string, post: FBPost) {
+    post.username = post.username.toLowerCase().replace(/ /g, '');
+    gun.user().get("facebook").get(post.username).get(urlId).put(JSON.stringify(post), (cb: object) => {
+      console.log("POST SUCCESSFULLY SAVED?", cb)
+      // gun.user().get("facebook").get(post.username).get(urlId).once((s:object) => {
+      //   console.log("saved post", s);
+      // })
+    });
+  }
+
+  public pythonToJSobject(pythonObjectString: string): string {
+    pythonObjectString = pythonObjectString.replace(/datetime.datetime/, '\'');
+    pythonObjectString = pythonObjectString.replace(/, 'timestamp'/, '\', \'timestamp\'');
+    pythonObjectString = pythonObjectString.replace(/'/g, '"');
+    pythonObjectString = pythonObjectString.replace(/None/g, 'null');
+    pythonObjectString = pythonObjectString.replace(/False/g, 'false');
+    pythonObjectString = pythonObjectString.replace(/True/g, 'true');
+    return pythonObjectString;
   }
 
   public async getFacebookPostById(username: string, urlId: string): Promise<string> {
@@ -87,7 +96,7 @@ export class FacebookService {
     return await gun.user().get("facebook").get(username);
   }
 
-  public async scrapeFacebookPage(page: string): Promise<void> {
+  public async scrapeFacebookUsername(page: string): Promise<void> {
     const gunUser = gun.user();
     const results: FBPost[] = [];
     const {exec} = require("child_process")
