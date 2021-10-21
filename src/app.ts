@@ -3,7 +3,7 @@ import express, { Application, Router,  Response as ExResponse,
   Request as ExRequest,
   NextFunction, } from "express";
 import swaggerUi from "swagger-ui-express";
-import { RegisterRoutes } from "../build/routes";
+import { RegisterRoutes } from "../build/routes/routes";
 import { ValidateError } from 'tsoa';
 import * as dotenv from "dotenv";
 import cors from "cors";
@@ -26,7 +26,6 @@ app.use(express.static("public"));
 
 console.log(marked('# Starting Gunpoint API !'))
 export const gun = Gun({ 
-  web: app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
   peers: [process.env.GUN_HOST],
   axe: false,
   multicast: {
@@ -36,8 +35,7 @@ export const gun = Gun({
 
 //Init Gun
 initGun()
-initHTTPserver()
-
+initHTTPserver();
 async function initGun() {
   let gunUser = gun.user()
   let appGunPubKey = "TBD"
@@ -46,26 +44,28 @@ async function initGun() {
     appGunPubKey = gunUser.is.pub;
   } else {
     console.log('You are NOT logged in');
-    appGunPubKey = gun.user().create(process.env.GUN_USER, process.env.GUN_PWD, (cb: any) => {
-      console.log("create user cb", cb);
-      if (cb.ok === 0) {
-        return cb.pub
-      }
+    // appGunPubKey = gun.user().create(process.env.GUN_USER, process.env.GUN_PWD, (cb: any) => {
+    //   console.log("create user cb", cb);
+    //   if (cb.ok === 0) {
+    //     return cb.pub
+    //   }
       //login if create failed
       gun.user().auth("myriad-scraper", "supahScr3tPwd", async (cb: any) => {
-        gunUser = gun.user()
+        gunUser = gun.user();
         if (!gunUser.is) {
           console.log("LOGGED INTO GUN FAILED")
           return;
         }
-        console.log("current user:", gunUser.is)
+        console.log("current user:", gunUser.is);
+        
         return cb.get;
       })
-    })
+    // })
   }
 }
 
 function initHTTPserver() {
+  app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
   app.use(cors()); 
   app.use(Gun.serve)
   app.use(express.json())
@@ -74,7 +74,7 @@ function initHTTPserver() {
     swaggerUi.serve,
     swaggerUi.setup(undefined, {
       swaggerOptions: {
-        url: "/swagger.json",
+        url: "./swagger.json", 
       },
     })
   );

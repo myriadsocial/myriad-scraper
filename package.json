@@ -27,8 +27,10 @@
   "scripts": {
     "start": "tsc --outDir build --experimentalDecorators && node ./build/src/app.js",
     "build": "tsoa spec-and-routes && tsc --outDir build",
+    "pretest": "yarn run tsoa routes",
     "test": "jest",
-    "dev": "yarn run tsoa routes && ts-node src/app.ts"
+    "dev": "yarn run tsoa routes && ts-node src/app.ts",
+    "tsoa:gen": "tsoa routes && tsoa swagger"
   },
   "dependencies": {
     "@types/cors": "^2.8.12",

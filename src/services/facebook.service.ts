@@ -6,18 +6,25 @@ export interface FbInidivdualPostsNode {
   [key: string]: string;
 }
 
-interface FBPost {
+export interface FBPost {
   text: string;
-  // images: string[];
-  // video: string;
-  // username: string;
+  images: string[];
+  video: string;
+  username: string;
   post_id: string;
+  url: string;
+  importers: string[];
+  metrics: {
+    likes: number,
+    comments?: number,
+    shares: number
+  },
 }
-
 export class FacebookService {
-  public async importFacebookPost(postId: string): Promise<object> {
+
+  public async importFacebookPost(urlId: string, importerUsername: string): Promise<object> {
     const {exec} = require("child_process")
-    return exec("python src/services/facebookScraper.py "+postId, async (error: { message: string; }, stdout: string, stderr: string) => {
+    return exec("python src/services/facebookScraper.py "+urlId, async (error: { message: string; }, stdout: string, stderr: string) => {
       if (error) {
         console.log(`error: ${error.message}`);
       }
@@ -25,26 +32,71 @@ export class FacebookService {
         console.log(`stderr: ${stderr}`);
       }
       if (stdout) {
-        // stdout = stdout.replace(/'time'.*?), /g, '');
-        stdout = stdout.replace(/'time'[^|]+, /g, '');
-        
-        //TODO: fix regex replace (removing too much data) thhen parse into FBPost interface 
-        // let post: FBPost = JSON.parse(stdout);
-        gun.user().get("facebook").put({[postId]: stdout});
+        console.log(`stdout: ${stdout}`);
+        const jsObjectString = this.pythonToJSobject(stdout);
+        try {
+          let rawJson = JSON.parse(jsObjectString);
+          let images = null;
+          if (rawJson.images.length > 0) {
+            images = rawJson.images;
+          } else if (rawJson.images_lowquality.length > 0) {
+            images = rawJson.images_lowquality;
+          }
+          //TODO: find a better way of removing unwanted keys
+          let post: FBPost = {
+            text: rawJson.text,
+            video: rawJson.video,
+            images,
+            username: rawJson.username,
+            post_id: rawJson.post_id,
+            url: rawJson.post_url,
+            importers: [importerUsername],
+            metrics: {
+              likes: rawJson.likes,
+              comments: rawJson.comments,
+              shares: rawJson.shares
+            }
+          }
+          console.log(post);
+          this.savePostToGun(urlId, post);
+        } catch (e) {
+          console.log("error", e);
+        }
       }
     });
   }
 
-  public async getFacebookPostById(postId: string): Promise<string> {
-    const fbNode = await this.getFacebookNode();
-    return fbNode[postId];
+  public savePostToGun(urlId: string, post: FBPost) {
+    post.username = post.username.toLowerCase().replace(/ /g, '');
+    gun.user().get("facebook").get(post.username).get(urlId).put(JSON.stringify(post), (cb: object) => {
+      console.log("POST SUCCESSFULLY SAVED?", cb)
+      // gun.user().get("facebook").get(post.username).get(urlId).once((s:object) => {
+      //   console.log("saved post", s);
+      // })
+    });
   }
 
-  public async getFacebookNode(): Promise<FbInidivdualPostsNode> {
-    return await gun.user().get("facebook");
+  public pythonToJSobject(pythonObjectString: string): string {
+    pythonObjectString = pythonObjectString.replace(/datetime.datetime/, '\'');
+    pythonObjectString = pythonObjectString.replace(/, 'timestamp'/, '\', \'timestamp\'');
+    pythonObjectString = pythonObjectString.replace(/'/g, '"');
+    pythonObjectString = pythonObjectString.replace(/None/g, 'null');
+    pythonObjectString = pythonObjectString.replace(/False/g, 'false');
+    pythonObjectString = pythonObjectString.replace(/True/g, 'true');
+    return pythonObjectString;
   }
 
-  public async scrapeFacebookPage(page: string): Promise<void> {
+  public async getFacebookPostById(username: string, urlId: string): Promise<string> {
+    // const fbPageNode = await this.getFacebookPage(page);
+    const post = await gun.user().get("facebook").get(username).get(urlId);
+    return post.toString();
+  }
+
+  public async getUsernamesPosts(username: string): Promise<FbInidivdualPostsNode> {
+    return await gun.user().get("facebook").get(username);
+  }
+
+  public async scrapeFacebookUsername(page: string): Promise<void> {
     const gunUser = gun.user();
     const results: FBPost[] = [];
     const {exec} = require("child_process")
@@ -56,7 +108,7 @@ export class FacebookService {
         results.forEach(post => {
           console.log(post.post_id);
           // post.text = post.text.replace(/'time'[^|]+, /g, '');
-          gunUser.get("facebook").put({[post.post_id]: post.text});
+          gunUser.get("facebook").get(page).put({[post.post_id]: post.text});
         })
         fs.unlink("./"+page+"_posts.csv", (err) => {
           if (err) console.log(err);
