@@ -104,3 +104,6 @@ routes
 
 # TernJS port file
 .tern-port
+
+*.csv
+radata

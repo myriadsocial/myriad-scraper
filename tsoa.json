@@ -7,6 +7,12 @@
     "specVersion": 3
   },
   "routes": {
-    "routesDir": "build"
+    "routesDir": "./build/routes",
+    "basePath": "/",
+    "entryFile": "./src/app.ts"
+  },
+  "swagger": {
+    "outputDirectory": ".",
+    "entryFile": "./src/app.ts"
   }
 }

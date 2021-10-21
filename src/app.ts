@@ -3,7 +3,7 @@ import express, { Application, Router,  Response as ExResponse,
   Request as ExRequest,
   NextFunction, } from "express";
 import swaggerUi from "swagger-ui-express";
-import { RegisterRoutes } from "../build/routes";
+import { RegisterRoutes } from "../build/routes/routes";
 import { ValidateError } from 'tsoa';
 import * as dotenv from "dotenv";
 import cors from "cors";
@@ -35,8 +35,7 @@ export const gun = Gun({
 
 //Init Gun
 initGun()
-initHTTPserver()
-
+initHTTPserver();
 async function initGun() {
   let gunUser = gun.user()
   let appGunPubKey = "TBD"
@@ -52,12 +51,13 @@ async function initGun() {
     //   }
       //login if create failed
       gun.user().auth("myriad-scraper", "supahScr3tPwd", async (cb: any) => {
-        gunUser = gun.user()
+        gunUser = gun.user();
         if (!gunUser.is) {
           console.log("LOGGED INTO GUN FAILED")
           return;
         }
-        console.log("current user:", gunUser.is)
+        console.log("current user:", gunUser.is);
+        
         return cb.get;
       })
     // })
@@ -74,7 +74,7 @@ function initHTTPserver() {
     swaggerUi.serve,
     swaggerUi.setup(undefined, {
       swaggerOptions: {
-        url: "/swagger.json",
+        url: "./swagger.json", 
       },
     })
   );
