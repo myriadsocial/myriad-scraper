@@ -31,6 +31,7 @@ export const gun = Gun({
   multicast: {
     port: process.env.GUN_PORT
   },
+  localStorage: false
 });
 
 //Init Gun
