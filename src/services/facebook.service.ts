@@ -24,7 +24,7 @@ export class FacebookService {
 
   public async importFacebookPost(urlId: string, importerUsername: string): Promise<object> {
     const {exec} = require("child_process")
-    return exec("python src/services/facebookScraper.py "+urlId, async (error: { message: string; }, stdout: string, stderr: string) => {
+    return exec("python3 src/services/facebookScraper.py "+urlId, async (error: { message: string; }, stdout: string, stderr: string) => {
       if (error) {
         console.log(`error: ${error.message}`);
       }
@@ -70,6 +70,12 @@ export class FacebookService {
     post.username = post.username.toLowerCase().replace(/ /g, '');
     gun.user().get("facebook").get(post.username).get(urlId).put(JSON.stringify(post), (cb: object) => {
       console.log("POST SUCCESSFULLY SAVED?", cb)
+      //save username to urlId in case username is unknown from URL
+      // TODO: create interface for cb: if (cb.ok && !err) 
+      
+      gun.user().get("facebook").get(urlId).put(post.username, (cb: object) => {
+        console.log(console.log(post.username, cb));
+      });
       // gun.user().get("facebook").get(post.username).get(urlId).once((s:object) => {
       //   console.log("saved post", s);
       // })
