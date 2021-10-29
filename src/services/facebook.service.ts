@@ -11,6 +11,7 @@ export interface FBPost {
   images: string[];
   video: string;
   username: string;
+  user_id: string;
   post_id: string;
   url: string;
   importers: string[];
@@ -33,9 +34,8 @@ export class FacebookService {
       }
       if (stdout) {
         console.log(`stdout: ${stdout}`);
-        const jsObjectString = this.pythonToJSobject(stdout);
         try {
-          let rawJson = JSON.parse(jsObjectString);
+          let rawJson = JSON.parse(stdout);
           let images = null;
           if (rawJson.images.length > 0) {
             images = rawJson.images;
@@ -48,6 +48,7 @@ export class FacebookService {
             video: rawJson.video,
             images,
             username: rawJson.username,
+            user_id: rawJson.user_id,
             post_id: rawJson.post_id,
             url: rawJson.post_url,
             importers: [importerUsername],
@@ -67,18 +68,14 @@ export class FacebookService {
   }
 
   public savePostToGun(urlId: string, post: FBPost) {
-    post.username = post.username.toLowerCase().replace(/ /g, '');
-    gun.user().get("facebook").get(post.username).get(urlId).put(JSON.stringify(post), (cb: object) => {
+    const cleanUsername = post.username.toLowerCase().replace(/ /g, '');
+    gun.user().get("facebook").get(cleanUsername).get(urlId).put(JSON.stringify(post), (cb: object) => {
       console.log("POST SUCCESSFULLY SAVED?", cb)
       //save username to urlId in case username is unknown from URL
       // TODO: create interface for cb: if (cb.ok && !err) 
-      
-      gun.user().get("facebook").get(urlId).put(post.username, (cb: object) => {
-        console.log(console.log(post.username, cb));
+      gun.user().get("facebook").get(urlId).put(cleanUsername, (cb: object) => {
+        console.log(post.username, cb);
       });
-      // gun.user().get("facebook").get(post.username).get(urlId).once((s:object) => {
-      //   console.log("saved post", s);
-      // })
     });
   }
 
