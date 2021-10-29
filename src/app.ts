@@ -31,7 +31,6 @@ export const gun = Gun({
   multicast: {
     port: process.env.GUN_PORT
   },
-  localStorage: false
 });
 
 //Init Gun
@@ -68,7 +67,6 @@ async function initGun() {
 function initHTTPserver() {
   app.listen(port, () => { console.log(marked('**Express with GunDB is running at http://localhost:' + port + '**')) }),
   app.use(cors()); 
-  app.use(Gun.serve)
   app.use(express.json())
   app.use(
     "/docs",
