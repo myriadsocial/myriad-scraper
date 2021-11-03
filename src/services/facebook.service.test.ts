@@ -18,6 +18,7 @@ describe('Facebook Service\'s Unit Tests ', () => {
       images: ["image1", "image2"],
       username: creatorUsername,
       post_id: "12396958329",
+      user_id: "12391350",
       url: "https://url.com/bla",
       importers: ["importerUsername"],
       metrics: {
