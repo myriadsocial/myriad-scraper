@@ -8,12 +8,8 @@ import { ValidateError } from 'tsoa';
 import * as dotenv from "dotenv";
 import cors from "cors";
 
-// require('gun/axe');
-require('gun/sea');
-
 const TerminalRenderer = require('marked-terminal');
 const Gun = require('gun');
-// const SEA = Gun.SEA;
 
 dotenv.config();
 const port = process.env.PORT || 5000; 
