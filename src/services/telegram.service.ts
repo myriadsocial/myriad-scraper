@@ -2,6 +2,16 @@ import {gun} from "../app";
 import { parse } from 'node-html-parser';
 import axios from "axios"
 
+interface TelegramMessage {
+  text: string;
+  id: string;
+  profilePicture: string;
+  username: string;
+  url: string;
+  datetime?: Date;
+  importer: string;
+}
+
 export class TelegramService {
   public async scrapeChannelPreviewHTML(channel: string): Promise<boolean> {
     const gunUser = gun.user();
@@ -16,15 +26,12 @@ export class TelegramService {
     
     let output = await axios.get("https://t.me/s/"+channel+telegramQueryParam)
       .then((response) => {
-        // res.send("NICE!");
         const responseStr = response.data.toString();
-        // console.log(responseStr)
         const html = parse(responseStr);
         const messagesText = html.querySelectorAll(".js-message_text");
         const messagesInfo = html.querySelectorAll(".js-message_info");
   
         if (messagesText.length !== messagesInfo.length) {
-          // return res.send("BAD REQUEST");
           return "BAD"
         }
         
@@ -45,5 +52,53 @@ export class TelegramService {
       })
     if (output) return true;
     return false;
+  }
+
+  public async importIndividualMessage(channel: string, messageId: string, importerUsername: string): Promise<string|void> {
+    const gunUser = gun.user();
+    const savedMessage = await gunUser.get("telegram").get(channel).get(messageId);
+    if (savedMessage) return savedMessage;
+    let url = "https://t.me/"+channel+'/'+messageId;
+    return axios.get(url)
+      .then((response) => {
+        const responseStr = response.data.toString();
+        const html = parse(responseStr);
+        const metaData = html.querySelectorAll("meta");
+        let profilePicture = '';
+        let username = '';
+        let text = '';
+        //TODO: get timestamp but it's not getting returned in response
+        // const dateData = html.querySelectorAll(".js-message_footer");
+        for (let i=0; i< metaData.length; i++) {
+          switch (metaData[i].rawAttributes.property) {
+            case "og:image":
+              profilePicture = metaData[i].rawAttributes.content;
+              break;
+            case "og:title":
+              username = metaData[i].rawAttributes.content;
+              break;
+            case "og:description":
+              text = metaData[i].rawAttributes.content;
+              break;
+          }
+        }
+        
+        const message: TelegramMessage = {
+          id: messageId,
+          profilePicture,
+          username,
+          text,
+          url,
+          importer: importerUsername,
+        }
+        gunUser.get('telegram').get(channel).get(messageId).put(JSON.stringify(message), (cb: any) => {
+          console.log("Gun put() callback", cb);
+        });
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+        return "Something went wrong";
+      })
   }
 }
